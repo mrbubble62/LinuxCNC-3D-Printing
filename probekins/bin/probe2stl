@@ -12,7 +12,9 @@
 import fileinput
 import os,sys
 from optparse import Option, OptionParser
-import voronoi
+#import voronoi
+from scipy.spatial import Delaunay
+import numpy as np
 
 options = [Option( '-d','--debug', action='store_true', dest='debug', help="enable debug output"),
            Option( '-i','--inifile', dest='inifile', help="add machine boundary points from ini file"),
@@ -27,7 +29,7 @@ class Point(object):
 
 def stldump(file,points,facets):
     file.write("solid foo\n")
-    for f in facets:
+    for f in facets.simplices:
         file.write("  facet normal 0 0 0\n") # invalid normal; we dont use it
         file.write("   outer loop"+"\n")
         for j in range(3):
@@ -79,8 +81,9 @@ def main():
         points.append(Point(xmax,ymax,zbound))
         points.append(Point(xmin,ymax,zbound))
         points.append(Point(xmax,ymin,zbound))
-
-    triangles =  voronoi.computeDelaunayTriangulation(points)
+    d =  np.array([[e.x, e.y] for e in points])
+    triangles = Delaunay(d)
+    #triangles =  voronoi.computeDelaunayTriangulation(points)
     stldump(sys.stdout,points,triangles)
 
 
