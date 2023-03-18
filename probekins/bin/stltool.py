@@ -42,7 +42,7 @@ class stl:
         else:
             self.f = list(open(filename))
         if not self.f[0].startswith("solid"):
-            print >> sys.stderr,"Not an ascii stl solid - attempting to parse as binary"
+            print( "Not an ascii stl solid - attempting to parse as binary",file=sys.stderr)
             f = open(filename,"rb")
             buf = f.read(84)
             while(len(buf)<84):
@@ -52,7 +52,7 @@ class stl:
                 buf += newdata
             facetcount = struct.unpack_from("<I",buf,80)
             facetformat = struct.Struct("<ffffffffffffH")
-            for i in xrange(facetcount[0]):
+            for i in range(facetcount[0]):
                 buf = f.read(50)
                 while(len(buf)<50):
                     newdata = f.read(50-len(buf))
@@ -76,12 +76,12 @@ class stl:
         minx = miny = minz = 0
         maxx = maxy = maxz = 0
         for i in range(len(self.facets)):
-            minx = min(map(lambda x:x[0], self.facets[i][1]))
-            maxx = max(map(lambda x:x[0], self.facets[i][1]))
-            miny = min(map(lambda x:x[1], self.facets[i][1]))
-            maxy = max(map(lambda x:x[1], self.facets[i][1]))
-            minz = min(map(lambda x:x[2], self.facets[i][1]))
-            maxz = max(map(lambda x:x[2], self.facets[i][1]))
+            minx = min(list(map(lambda x:x[0], self.facets[i][1])))
+            maxx = max(list(map(lambda x:x[0], self.facets[i][1])))
+            miny = min(list(map(lambda x:x[1], self.facets[i][1])))
+            maxy = max(list(map(lambda x:x[1], self.facets[i][1])))
+            minz = min(list(map(lambda x:x[2], self.facets[i][1])))
+            maxz = max(list(map(lambda x:x[2], self.facets[i][1])))
         self.bbox = [[minx,miny,minz],[maxx,maxy,maxz]]
 
     def translate(self,v=[0,0,0]):
@@ -173,13 +173,13 @@ class stl:
             l = l.replace(",",".")
             self.facetloc = 0
             self.facet = [[0,0,0],[[0,0,0],[0,0,0],[0,0,0]]]
-            self.facet[0] = map(float,l.split()[2:])
+            self.facet[0] = list(map(float,l.split()[2:]))
         elif l.startswith("endfacet"):
             self.facets += [self.facet]
             facet = self.facet
         elif l.startswith("vertex"):
             l = l.replace(",",".")
-            self.facet[1][self.facetloc] = map(float,l.split()[1:])
+            self.facet[1][self.facetloc] = list(map(float,l.split()[1:]))
             self.facetloc += 1
         return 1
 
@@ -200,7 +200,7 @@ class stl:
             for j in range(len(vl)):
                 v = vl[j]
                 vertex = tuple(v)
-                if not coords.has_key(vertex):
+                if not vertex in coords:
                     coords[vertex] = index
                     index += 1
                     verts.append(vertex)
@@ -211,13 +211,13 @@ class stl:
 if __name__=="__main__":
     s = stl("twotriangles.stl")
     (v,f) = s.unique_vertices(s.facets)
-    print "unique vertices:",v
-    print "faces by vertex index:", f
+    print( "unique vertices:",v)
+    print( "faces by vertex index:", f)
     sf = s.scale(v=[2,2,2])
-    print "scaled:", sf.facets
+    print( "scaled:", sf.facets)
     sr = s.rotate(v=[90,0,0])
-    print "rotated:", sr.facets
+    print( "rotated:", sr.facets)
     st = s.translate(v=[10,0,4])
-    print "translated:", st.facets
-    print "boundingbox:",s.bbox
+    print( "translated:", st.facets)
+    print( "boundingbox:",s.bbox)
     s.export()
