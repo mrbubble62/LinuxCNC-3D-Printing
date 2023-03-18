@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # probe2stl reads x,y,z points from stdin, and creates a triangular mesh
 # opionally (-i inifile) the machine boundaries are read from the ini file (AXIS_0/1, MIN/MAX_LIMIT)
@@ -9,7 +9,7 @@
 #
 # probe2stl [-i inifile] [-z boundary-z] <probe.txt | stlcorr -l
 # probe2stl [-i inifile] [-z boundary-z] <probe.txt | stlvis [-b xmin,ymin,xmax,ymax]
-
+import fileinput
 import os,sys
 from optparse import Option, OptionParser
 import voronoi
@@ -18,7 +18,6 @@ options = [Option( '-d','--debug', action='store_true', dest='debug', help="enab
            Option( '-i','--inifile', dest='inifile', help="add machine boundary points from ini file"),
            Option( '-z','--zbound', dest='zbound', type="float", help="add machine boundaries at this z value"),
           ]
-
 
 class Point(object):
     def __init__(self,x,y,z):
@@ -40,9 +39,9 @@ def stldump(file,points,facets):
 
 def readpoints():
     points = []
-    for l in sys.stdin:
+    for l in fileinput.input(): #sys.stdin
         l.strip()
-        p = map(float,l.split()[0:3])
+        p = list(map(float,l.split()[0:3]))
         if len(p) == 3:
             points.append(Point(p[0],p[1],p[2]))
     return points
@@ -68,10 +67,11 @@ def main():
             units = 1.0
         else:
             units = 25.4
-	xmin = float(inifile.find("AXIS_0", "MIN_LIMIT")) * units
-	ymin = float(inifile.find("AXIS_1", "MIN_LIMIT")) * units
-	xmax = float(inifile.find("AXIS_0", "MAX_LIMIT")) * units
-	ymax = float(inifile.find("AXIS_1", "MAX_LIMIT")) * units
+        units = 1.0
+        xmin = float(inifile.find("AXIS_0", "MIN_LIMIT")) * units
+        ymin = float(inifile.find("AXIS_1", "MIN_LIMIT")) * units
+        xmax = float(inifile.find("AXIS_0", "MAX_LIMIT")) * units
+        ymax = float(inifile.find("AXIS_1", "MAX_LIMIT")) * units
         zbound = 0
         if opts.zbound:
             zbound = opts.zbound
