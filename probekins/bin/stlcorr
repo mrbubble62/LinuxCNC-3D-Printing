@@ -60,7 +60,7 @@ def load_file(b, filename):
         print >> sys.stderr, "shared memory size %d, used %d" % (len(b),req)
 
     if len(b) < req:
-        raise Exception, "Buffer too small, have %d need %d" % (len(b),req)
+        raise Exception("Buffer too small, have %d need %d" % (len(b),req))
 
     set_header(b,0,0) # disable while loading
 
@@ -78,28 +78,28 @@ def load_file(b, filename):
         print >> sys.stderr, "loaded."
 
 def get_buffer():
-    c = hal.component("notused")
-    sm = hal.shm(c,key,size)
-    return sm.getbuffer()
+     c = hal.component("notused")
+     sm = hal.shm(c,key,size)
+     return sm.getbuffer()
 
 def gcode(s,filename,scale,rotate,translate):
     if filename:
-        print "; converted from",filename
+        print( "; converted from",filename)
     if scale:
-        print "; scale; ",scale
+        print( "; scale; ",scale)
     if rotate:
-        print "; rotate; ",rotate
+        print( "; rotate; ",rotate)
     if translate:
-        print "; translate; ",translate
-    print "; boundingbox:",s.bbox
+        print( "; translate; ",translate)
+    print( "; boundingbox:",s.bbox)
 
     for i in range(len(s.facets)):
         f = s.facets[i][1]
-        print "G0 X%.4f Y%4f Z%4f" % (f[0][0],f[0][1],f[0][2])
-        print "G1 X%.4f Y%4f Z%4f" % (f[1][0],f[1][1],f[1][2])
-        print "G1 X%.4f Y%4f Z%4f" % (f[2][0],f[2][1],f[2][2])
-        print "G1 X%.4f Y%4f Z%4f" % (f[0][0],f[0][1],f[0][2])
-    print "m2"
+        print( "G0 X%.4f Y%4f Z%4f" % (f[0][0],f[0][1],f[0][2]))
+        print( "G1 X%.4f Y%4f Z%4f" % (f[1][0],f[1][1],f[1][2]))
+        print( "G1 X%.4f Y%4f Z%4f" % (f[2][0],f[2][1],f[2][2]))
+        print( "G1 X%.4f Y%4f Z%4f" % (f[0][0],f[0][1],f[0][2]))
+    print( "m2")
 
 def main():
     """
