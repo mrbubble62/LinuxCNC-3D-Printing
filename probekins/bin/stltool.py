@@ -2,7 +2,10 @@
 # STL binary and ascii I/O
 # also provides scaling, rotation, translation and bounding box
 
+
+from __future__ import division
 import sys, struct, math
+
 
 I=[[1,0,0,0],
     [0,1,0,0],
@@ -19,17 +22,17 @@ def genfacet(v):
     vlen = math.sqrt(sum(map(lambda x:x*x,vecx)))
     if vlen == 0:
         vlen = 1
-    normal = map(lambda x:x/vlen, vecx)
+    normal = list(map(lambda x:x//vlen, vecx))
     return [normal,v]
 
 def transpose(matrix):
     return zip(*matrix)
 
 def multmatrix(vector,matrix):
-    return map(sum, transpose(map(lambda x:[x[0]*p for p in x[1]], zip(vector, transpose(matrix)))))
+    return map(sum, transpose(list(map(lambda x:[x[0]*p for p in x[1]], zip(vector, transpose(matrix))))))
 
 def applymatrix(facet,matrix=I):
-    return genfacet(map(lambda x:multmatrix(x+[1],matrix)[:3],facet[1]))
+    return genfacet(list(map(lambda x:multmatrix(x+[1],matrix)[:3],facet[1])))
 
 class stl:
     def __init__(self, filename=None):
@@ -42,7 +45,7 @@ class stl:
         else:
             self.f = list(open(filename))
         if not self.f[0].startswith("solid"):
-            print( "Not an ascii stl solid - attempting to parse as binary",file=sys.stderr)
+            print( "Not an ascii stl solid - attempting to parse as binary")
             f = open(filename,"rb")
             buf = f.read(84)
             while(len(buf)<84):
