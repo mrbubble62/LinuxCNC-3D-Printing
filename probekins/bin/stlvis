@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 import os,sys
 from optparse import Option, OptionParser
@@ -6,15 +6,12 @@ import stltool
 import numpy as np
 import matplotlib.pyplot as pp
 
-
-options = [Option( '-d','--debug', action='store_true', dest='debug', help="enable debug output"),
-	   Option( '-b','--boundary', dest='boundary', help="set plotting axes, like -b x0,y0,x1,y1"),
-          ]
-
 def main():
     global opts
     (progdir, progname) = os.path.split(sys.argv[0])
-    
+    options = [Option( '-d','--debug', action='store_true', dest='debug', help="enable debug output"),
+	   Option( '-b','--boundary', dest='boundary', help="set plotting axes, like -b x0,y0,x1,y1"),
+          ]
     usage = "usage: %prog [options] [stl file]"
     parser = OptionParser(usage=usage)
     parser.disable_interspersed_args()
@@ -46,4 +43,4 @@ def main():
 if __name__ == '__main__':
     main()
 
-# %%
+
